@@ -1,0 +1,7 @@
+var client *redis.Client
+var Users map[string]*websocket.Conn
+var sub *redis.PubSub
+
+func init() {
+	Users = map[string]*websocket.Conn{}
+}

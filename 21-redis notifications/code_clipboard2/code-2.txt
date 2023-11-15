@@ -1,0 +1,22 @@
+func get(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	key := vars["key"]
+
+	value, err := client.Get(req.Context(), key).Result()
+	if err != nil {
+		if errors.Is(err, redis.Nil) {
+			fmt.Println("key", key, "not found")
+			http.Error(w, "key "+key+" not found", http.StatusNotFound)
+			return
+		}
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	_, err = fmt.Fprintln(w, value)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}

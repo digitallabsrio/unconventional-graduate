@@ -1,0 +1,60 @@
+func load(w http.ResponseWriter, req *http.Request) {
+	fmt.Println("loading data.....")
+
+	f, err := os.Open(fileName)
+	if err != nil {
+		fmt.Println("cannot read shops info file", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	defer f.Close()
+
+	var stores StoreInfo
+	err = json.NewDecoder(bufio.NewReader(f)).Decode(&stores)
+	if err != nil {
+		fmt.Println("decode failed", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	pipe := client.Pipeline()
+
+	for _, store := range stores {
+		err = pipe.GeoAdd(req.Context(), geoName, &redis.GeoLocation{Name: store.Name, Latitude: store.Position.Lat, Longitude: store.Position.Lng}).Err()
+		if err != nil {
+			fmt.Println("failed to add store location info", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		parts := strings.Split(store.Name, " ")
+		storeid := parts[len(parts)-1]
+		storeHashName := hashNamePrefix + storeid
+
+		err = pipe.HSet(req.Context(), storeHashName, "name", store.Name, "address", store.Address, "phone", store.Phone).Err()
+		if err != nil {
+			fmt.Println("failed to add store data", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	_, err = pipe.Exec(req.Context())
+	if err != nil {
+		fmt.Println("pipeline execution failed", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	fmt.Println("done loading data")
+}
+
+type StoreInfo []struct {
+	Position struct {
+		Lat float64 `json:"lat"`
+		Lng float64 `json:"lng"`
+	} `json:"position"`
+	Name    string `json:"name"`
+	Address string `json:"address"`
+	Phone   string `json:"phone"`
+}

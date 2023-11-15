@@ -1,0 +1,48 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"log"
+
+	"github.com/go-redis/redis/v9"
+)
+
+var client *redis.Client
+
+const luaScript = `
+	local key = KEYS[1]
+	local value = ARGV[1] + ARGV[2]
+	redis.call("SET", key, value)
+	return value
+	`
+
+func init() {
+	client = redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	err := client.Ping(context.Background()).Err()
+	if err != nil {
+		log.Fatalf("failed to connect to redis. error message - %v", err)
+	}
+}
+
+func main() {
+	script := redis.NewScript(luaScript)
+
+	result, err := script.Eval(context.Background(), client, []string{"sum"}, "10", "20").Int()
+	if err != nil {
+		fmt.Println("lua scrip eval failed", err)
+	}
+	fmt.Println("lua script eval sum result", result)
+
+	result, err = script.EvalSha(context.Background(), client, []string{"sum"}, "10", "20").Int()
+	if err != nil {
+		fmt.Println("lua scrip eval failed", err)
+	}
+	fmt.Println("lua script eval sha sum result", result)
+
+	_, err = script.EvalRO(context.Background(), client, []string{"sum"}, "40", "21").Int()
+	if err != nil {
+		fmt.Println("lua scrip eval read_only failed", err)
+	}
+}

@@ -1,0 +1,58 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"strconv"
+
+	"github.com/go-redis/redis/v8"
+)
+
+func main() {
+	client := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+
+	err := client.Ping(context.Background()).Err()
+	if err != nil {
+		log.Fatalf("failed to connect to redis. error message - %v", err)
+	}
+
+	fmt.Println("successfully connected to redis")
+
+	ctx := context.Background()
+
+	var itemIDs []string
+
+	for i := 1; i <= 5; i++ {
+		p := strconv.Itoa(i)
+		r, err := client.XAdd(ctx, &redis.XAddArgs{Stream: "test-stream", Values: []string{"key-" + p, "value-" + p}}).Result()
+
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("added item to stream. item id -", r)
+		itemIDs = append(itemIDs, r)
+	}
+
+	streamLen := client.XLen(ctx, "test-stream").Val()
+	fmt.Println("stream length", streamLen)
+
+	items := client.XRangeN(context.Background(), "test-stream", "-", "+", 3).Val()
+
+	fmt.Println("listing stream items with xrange")
+	for _, item := range items {
+		fmt.Println(item.ID, item.Values)
+	}
+
+	items = client.XRevRangeN(context.Background(), "test-stream", "+", "-", 3).Val()
+
+	fmt.Println("listing stream items with xrevrange")
+	for _, item := range items {
+		fmt.Println(item.ID, item.Values)
+	}
+
+	client.XDel(ctx, "test-stream", itemIDs...)
+	streamLen = client.XLen(ctx, "test-stream").Val()
+
+	fmt.Println("stream length after deletion", streamLen)
+}

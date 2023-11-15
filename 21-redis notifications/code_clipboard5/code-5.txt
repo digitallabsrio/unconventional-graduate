@@ -1,0 +1,11 @@
+func main() {
+	//Key miss events (events generated when a key that doesn't exist is accessed)
+	sub = client.Subscribe(context.Background(), "__keyevent@0__:keymiss")
+
+	go loadCache()
+
+	r := mux.NewRouter()
+	r.HandleFunc("/{key}", get).Methods(http.MethodGet)
+
+	log.Fatal(http.ListenAndServe(":8080", r))
+}

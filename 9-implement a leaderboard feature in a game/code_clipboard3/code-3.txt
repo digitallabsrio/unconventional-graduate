@@ -1,0 +1,31 @@
+func addUser(w http.ResponseWriter, req *http.Request) {
+
+	userB, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.Println("failed to read payload", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer req.Body.Close()
+
+	exists, err := client.SIsMember(context.Background(), usersSet, string(userB)).Result()
+	if err != nil {
+		log.Println("could not check user", string(userB), "in set", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if !exists {
+		err = client.SAdd(context.Background(), usersSet, string(userB)).Err()
+		if err != nil {
+			log.Println("could not add user", string(userB), "to set", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		log.Println("added user", string(userB))
+	} else {
+		log.Println("user", string(userB), "already exists")
+		w.WriteHeader(http.StatusConflict)
+		fmt.Fprintln(w, string(userB)+" already exists")
+	}
+}

@@ -1,0 +1,13 @@
+func loadCache() {
+	for event := range sub.Channel() {
+		key := event.Payload
+
+		value := getValueForKeyFromDB(key)
+		err := client.Set(context.Background(), key, value, timeout*time.Second).Err()
+		if err != nil {
+			fmt.Println("set failed")
+		}
+
+		fmt.Println("[keyspace notification handler] set value for", key, "=", value, ".it will expire after few seconds")
+	}
+}

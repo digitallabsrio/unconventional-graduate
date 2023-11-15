@@ -1,0 +1,6 @@
+func monitor(w http.ResponseWriter, req *http.Request) {
+	pel := client.XPending(context.Background(), stream, consumerGroup).Val()
+	fmt.Println("number of pending messages", pel.Count)
+
+	w.Header().Add("X-Pending-Messages", strconv.Itoa(int(pel.Count)))
+}

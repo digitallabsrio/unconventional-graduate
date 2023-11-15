@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <style type="text/css">
+    :root {
+      --docsifytabs-border-color: #ededed;
+      --docsifytabs-border-px: 1px;
+      --docsifytabs-border-radius-px: ;
+      --docsifytabs-margin: 1.5em 0;
+      --docsifytabs-tab-background: #f8f8f8;
+      --docsifytabs-tab-background--active: var(--docsifytabs-content-background);
+      --docsifytabs-tab-color: #999;
+      --docsifytabs-tab-color--active: inherit;
+      --docsifytabs-tab-highlight-px: 3px;
+      --docsifytabs-tab-highlight-color: var(--theme-color, currentColor);
+      --docsifytabs-tab-padding: 0.6em 1em;
+      --docsifytabs-content-background: inherit;
+      --docsifytabs-content-padding: 1.5rem
+    }
+
+    .docsify-tabs:before,
+    .docsify-tabs__tab {
+      z-index: 1
+    }
+
+    .docsify-tabs__tab--active,
+    .docsify-tabs__tab:focus {
+      z-index: 2
+    }
+
+    .docsify-tabs {
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+      position: relative
+    }
+
+    .docsify-tabs:before {
+      -ms-flex-order: 0;
+      content: "";
+      -ms-flex: 1 1;
+      flex: 1 1;
+      order: 0
+    }
+
+    .docsify-tabs__tab {
+      -ms-flex-order: -1;
+      appearance: none;
+      font-size: inherit;
+      margin: 0;
+      order: -1;
+      position: relative
+    }
+
+    .docsify-tabs__content[class] {
+      height: 0;
+      overflow: hidden;
+      position: absolute;
+      visibility: hidden;
+      width: 100%
+    }
+
+    .docsify-tabs__content[class]>:first-child {
+      margin-top: 0
+    }
+
+    .docsify-tabs__content[class]>:last-child {
+      margin-bottom: 0
+    }
+
+    .docsify-tabs__tab--active+.docsify-tabs__content[class] {
+      height: auto;
+      overflow: auto;
+      position: relative;
+      visibility: visible
+    }
+
+    [class*=docsify-tabs--] {
+      margin: 1.5em 0;
+      margin: var(--docsifytabs-margin)
+    }
+
+    [class*=docsify-tabs--]>.docsify-tabs__tab {
+      background: #f8f8f8;
+      background: var(--docsifytabs-tab-background);
+      color: #999;
+      color: var(--docsifytabs-tab-color);
+      padding: .6em 1em;
+      padding: var(--docsifytabs-tab-padding)
+    }
+
+    [class*=docsify-tabs--]>.docsify-tabs__tab--active {
+      background: inherit;
+      background: var(--docsifytabs-tab-background--active);
+      color: inherit;
+      color: var(--docsifytabs-tab-color--active)
+    }
+
+    [class*=docsify-tabs--]>.docsify-tabs__content {
+      background: inherit;
+      background: var(--docsifytabs-content-background)
+    }
+
+    [class*=docsify-tabs--]>.docsify-tabs__tab--active+.docsify-tabs__content {
+      padding: 1.5rem;
+      padding: var(--docsifytabs-content-padding)
+    }
+
+    .docsify-tabs--classic:before,
+    .docsify-tabs--classic>.docsify-tabs__content,
+    .docsify-tabs--classic>.docsify-tabs__tab {
+      border-color: #ededed;
+      border-color: var(--docsifytabs-border-color);
+      border-style: solid;
+      border-width: 1px;
+      border-width: var(--docsifytabs-border-px)
+    }
+
+    .docsify-tabs--classic:before {
+      border-left-width: 0;
+      border-right-width: 0;
+      border-top-width: 0;
+      margin-right: 1px;
+      margin-right: var(--docsifytabs-border-px)
+    }
+
+    .docsify-tabs--classic>.docsify-tabs__tab:first-of-type {
+      border-top-left-radius: var(--docsifytabs-border-radius-px)
+    }
+
+    .docsify-tabs--classic>.docsify-tabs__tab:last-of-type {
+      border-top-right-radius: var(--docsifytabs-border-radius-px)
+    }
+
+    .docsify-tabs--classic>.docsify-tabs__tab~.docsify-tabs__tab {
+      margin-left: -1px;
+      margin-left: calc(0px - var(--docsifytabs-border-px))
+    }
+
+    .docsify-tabs--classic>.docsify-tabs__tab--active {
+      border-bottom-width: 0;
+      box-shadow: inset 0 3px 0 0 currentColor;
+      box-shadow: inset 0 var(--docsifytabs-tab-highlight-px) 0 0 var(--docsifytabs-tab-highlight-color)
+    }
+
+    .docsify-tabs--classic>.docsify-tabs__content {
+      border-radius: 0;
+      border-radius: 0 var(--docsifytabs-border-radius-px) var(--docsifytabs-border-radius-px) var(--docsifytabs-border-radius-px);
+      border-top: 0;
+      margin-top: -1px;
+      margin-top: calc(0px - var(--docsifytabs-border-px))
+    }
+
+    .docsify-tabs--material>.docsify-tabs__tab {
+      background: transparent;
+      border: 0;
+      margin-bottom: 2px;
+      margin-bottom: calc(var(--docsifytabs-tab-highlight-px) - var(--docsifytabs-border-px))
+    }
+
+    .docsify-tabs--material>.docsify-tabs__tab--active {
+      background: transparent;
+      box-shadow: 0 3px 0 0 currentColor;
+      box-shadow: 0 var(--docsifytabs-tab-highlight-px) 0 0 var(--docsifytabs-tab-highlight-color)
+    }
+
+    .docsify-tabs--material>.docsify-tabs__content {
+      border-color: #ededed;
+      border-color: var(--docsifytabs-border-color);
+      border-style: solid;
+      border-width: 1px 0;
+      border-width: var(--docsifytabs-border-px) 0
+    }
+  </style>
+  <!-- UPDATE: Add description, author, og:site_name, og:title, and og:description text for your course. -->
+  <!-- NOTE: Text presented in ALL_CAPS indicate values you should replace. -->
+  <title>Project</title>
+  <link rel="stylesheet" href="/unconventional-graduate/static/vue.css">
+  <link rel="stylesheet" href="/unconventional-graduate/static/style.min.css" title="docsify-darklight-theme" type="text/css">
+  <style type="text/css">
+    .docsify-copy-code-button,
+    .docsify-copy-code-button span {
+      cursor: pointer;
+      transition: all .25s ease
+    }
+
+    .docsify-copy-code-button {
+      position: absolute;
+      z-index: 1;
+      top: 0;
+      right: 0;
+      overflow: visible;
+      padding: .65em .8em;
+      border: 0;
+      border-radius: 0;
+      outline: 0;
+      font-size: 1em;
+      background: grey;
+      background: var(--theme-color, grey);
+      color: #fff;
+      opacity: 0
+    }
+
+    .docsify-copy-code-button span {
+      border-radius: 3px;
+      background: inherit;
+      pointer-events: none
+    }
+
+    .docsify-copy-code-button .error,
+    .docsify-copy-code-button .success {
+      position: absolute;
+      z-index: -100;
+      top: 50%;
+      right: 0;
+      padding: .5em .65em;
+      font-size: .825em;
+      opacity: 0;
+      -webkit-transform: translateY(-50%);
+      transform: translateY(-50%)
+    }
+
+    .docsify-copy-code-button.error .error,
+    .docsify-copy-code-button.success .success {
+      right: 100%;
+      opacity: 1;
+      -webkit-transform: translate(-115%, -50%);
+      transform: translate(-115%, -50%)
+    }
+
+    .docsify-copy-code-button:focus,
+    pre:hover .docsify-copy-code-button {
+      opacity: 1
+    }
+  </style>
+  <style type="text/css">
+    .alert {
+      word-wrap: break-word;
+      display: block;
+      margin-bottom: 1rem !important;
+      padding: .75rem 1.25rem !important;
+      position: relative;
+      word-break: break-word
+    }
+
+    .alert>* {
+      max-width: 100%
+    }
+
+    .alert>:first-child {
+      margin-top: 0
+    }
+
+    .alert>:last-child {
+      margin-bottom: 0
+    }
+
+    .alert:before {
+      content: unset !important
+    }
+
+    .alert+.alert {
+      margin-top: -.25rem !important
+    }
+
+    .alert p {
+      margin-bottom: .5rem;
+      margin-top: .5rem
+    }
+
+    .alert .title {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      font-weight: 600;
+      margin: 0
+    }
+
+    .icon {
+      background-repeat: no-repeat;
+      display: inline-block;
+      height: 16px;
+      margin-right: .5rem;
+      width: 16px
+    }
+
+    .alert.callout {
+      background: var(--background);
+      border: 1px solid #eee;
+      border-left-width: .25rem;
+      border-radius: .25rem
+    }
+
+    .alert.callout.note {
+      border-left-color: #17a2b8 !important
+    }
+
+    .alert.callout.note .title {
+      color: #17a2b8
+    }
+
+    .alert.callout.note .icon-note {
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='1em' height='1em' viewBox='0 0 16 16' fill='%2317a2b8' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'/%3E%3C/svg%3E")
+    }
+
+    .alert.callout.tip {
+      border-left-color: #28a745 !important
+    }
+
+    .alert.callout.tip .title {
+      color: #28a745
+    }
+
+    .alert.callout.tip .icon-tip {
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='1em' height='1em' viewBox='0 0 352 512' fill='%2328a745' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M96.06 454.35c.01 6.29 1.87 12.45 5.36 17.69l17.09 25.69a31.99 31.99 0 0 0 26.64 14.28h61.71a31.99 31.99 0 0 0 26.64-14.28l17.09-25.69a31.989 31.989 0 0 0 5.36-17.69l.04-38.35H96.01l.05 38.35zM0 176c0 44.37 16.45 84.85 43.56 115.78 16.52 18.85 42.36 58.23 52.21 91.45.04.26.07.52.11.78h160.24c.04-.26.07-.51.11-.78 9.85-33.22 35.69-72.6 52.21-91.45C335.55 260.85 352 220.37 352 176 352 78.61 272.91-.3 175.45 0 73.44.31 0 82.97 0 176zm176-80c-44.11 0-80 35.89-80 80 0 8.84-7.16 16-16 16s-16-7.16-16-16c0-61.76 50.24-112 112-112 8.84 0 16 7.16 16 16s-7.16 16-16 16z'/%3E%3C/svg%3E")
+    }
+
+    .alert.callout.warning {
+      border-left-color: #f0ad4e !important
+    }
+
+    .alert.callout.warning .title {
+      color: #f0ad4e
+    }
+
+    .alert.callout.warning .icon-warning {
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='1em' height='1em' viewBox='0 0 17 16' fill='%23f0ad4e' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 5zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z'/%3E%3C/svg%3E")
+    }
+
+    .alert.callout.attention {
+      border-left-color: #dc3545 !important
+    }
+
+    .alert.callout.attention .title {
+      color: #dc3545
+    }
+
+    .alert.callout.attention .icon-attention {
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='1em' height='1em' viewBox='0 0 16 16' fill='%23dc3545' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z'/%3E%3Cpath fill-rule='evenodd' d='M11.354 4.646a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708l6-6a.5.5 0 0 1 .708 0z'/%3E%3C/svg%3E")
+    }
+
+    .alert.flat {
+      background-color: #e2e3e5;
+      border: 1px solid #d6d8db;
+      border-radius: .125rem;
+      color: #383d41
+    }
+
+    .alert.flat.note {
+      background-color: #cdeefd;
+      border-color: #b4e6fc;
+      color: #02587f
+    }
+
+    .alert.flat.note .title {
+      color: #01354d
+    }
+
+    .alert.flat.note .icon-note {
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='1em' height='1em' viewBox='0 0 16 16' fill='%2301354d' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM8 5.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'/%3E%3C/svg%3E")
+    }
+
+    .alert.flat.tip {
+      background-color: #dbefdc;
+      border-color: #c9e7cb;
+      color: #285b2a
+    }
+
+    .alert.flat.tip .title {
+      color: #18381a
+    }
+
+    .alert.flat.tip .icon-tip {
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='1em' height='1em' viewBox='0 0 352 512' fill='%2318381a' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M96.06 454.35c.01 6.29 1.87 12.45 5.36 17.69l17.09 25.69a31.99 31.99 0 0 0 26.64 14.28h61.71a31.99 31.99 0 0 0 26.64-14.28l17.09-25.69a31.989 31.989 0 0 0 5.36-17.69l.04-38.35H96.01l.05 38.35zM0 176c0 44.37 16.45 84.85 43.56 115.78 16.52 18.85 42.36 58.23 52.21 91.45.04.26.07.52.11.78h160.24c.04-.26.07-.51.11-.78 9.85-33.22 35.69-72.6 52.21-91.45C335.55 260.85 352 220.37 352 176 352 78.61 272.91-.3 175.45 0 73.44.31 0 82.97 0 176zm176-80c-44.11 0-80 35.89-80 80 0 8.84-7.16 16-16 16s-16-7.16-16-16c0-61.76 50.24-112 112-112 8.84 0 16 7.16 16 16s-7.16 16-16 16z'/%3E%3C/svg%3E")
+    }
+
+    .alert.flat.warning {
+      background-color: #ffddd3;
+      border-color: #ffc9ba;
+      color: #852d12
+    }
+
+    .alert.flat.warning .title {
+      color: #581e0c
+    }
+
+    .alert.flat.warning .icon-warning {
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='1em' height='1em' viewBox='0 0 17 16' fill='%23581e0c' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5a.905.905 0 0 0-.9.995l.35 3.507a.552.552 0 0 0 1.1 0l.35-3.507A.905.905 0 0 0 8 5zm.002 6a1 1 0 1 0 0 2 1 1 0 0 0 0-2z'/%3E%3C/svg%3E")
+    }
+
+    .alert.flat.attention {
+      background-color: #fdd9d7;
+      border-color: #fcc2bf;
+      color: #7f231c
+    }
+
+    .alert.flat.attention .title {
+      color: #551713
+    }
+
+    .alert.flat.attention .icon-attention {
+      background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='1em' height='1em' viewBox='0 0 16 16' fill='%23551713' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z'/%3E%3Cpath fill-rule='evenodd' d='M11.354 4.646a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708l6-6a.5.5 0 0 1 .708 0z'/%3E%3C/svg%3E")
+    }
+  </style>
+  <style>
+    :root {
+      --theme-color: #126893;
+    }
+  </style>
+  <style>
+    .sidebar {
+      padding-top: 0;
+    }
+
+    .search {
+      margin-bottom: 20px;
+      padding: 6px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .search .input-wrap {
+      display: flex;
+      align-items: center;
+    }
+
+    .search .results-panel {
+      display: none;
+    }
+
+    .search .results-panel.show {
+      display: block;
+    }
+
+    .search input {
+      outline: none;
+      border: none;
+      width: 100%;
+      padding: 0.6em 7px;
+      font-size: inherit;
+      border: 1px solid transparent;
+    }
+
+    .search input:focus {
+      box-shadow: 0 0 5px var(--theme-color, #42b983);
+      border: 1px solid var(--theme-color, #42b983);
+    }
+
+    .search input::-webkit-search-decoration,
+    .search input::-webkit-search-cancel-button,
+    .search input {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+
+    .search input::-ms-clear {
+      display: none;
+      height: 0;
+      width: 0;
+    }
+
+    .search .clear-button {
+      cursor: pointer;
+      width: 36px;
+      text-align: right;
+      display: none;
+    }
+
+    .search .clear-button.show {
+      display: block;
+    }
+
+    .search .clear-button svg {
+      transform: scale(.5);
+    }
+
+    .search h2 {
+      font-size: 17px;
+      margin: 10px 0;
+    }
+
+    .search a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .search .matching-post {
+      border-bottom: 1px solid #eee;
+    }
+
+    .search .matching-post:last-child {
+      border-bottom: 0;
+    }
+
+    .search p {
+      font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .search p.empty {
+      text-align: center;
+    }
+
+    .app-name.hide,
+    .sidebar-nav.hide {
+      display: none;
+    }
+  </style>
+  <style></style>
+  <style></style>
+  <style></style>
+  <style></style>
+  <style></style>
+  <style></style>
+  <style></style>
+  <style></style>
+  <style></style>
+  <style></style>
+  <style></style>
+  <style></style>
+</head>
+
+<body class="ready sticky ready-fix close" data-page="Assignments/Sample_Project.md">
+  <nav class="app-nav"></nav>
+  <main><button class="sidebar-toggle" aria-label="Menu">
+      <div class="sidebar-toggle-button"><span></span><span></span><span></span></div>
+    </button>
+    <aside class="sidebar">
+      <h1 class="app-name"><a class="app-name-link" data-nosearch="" href="/"><img alt="Syllabus Template"
+            src="/unconventional-graduate/static/logo-icononly.svg"></a></h1>
+      <div class="sidebar-nav">
+    <ul>
+        <li><strong><a href="/" title="Syllabus">Syllabus</a></strong></li>
+        <li><strong>Lessons</strong>
+            <ul>
+                
+                
+                <li><a href="/unconventional-graduate/0-course overview/0-course overview.html" title="Course Overview">Course Overview</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/1-introduction to redis/1-introduction to redis.html" title="Introduction To Redis">Introduction To Redis</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/2-go client libraries for redis/2-go client libraries for redis.html" title="Go Client Libraries For Redis">Go Client Libraries For Redis</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/3-string and hash/3-string and hash.html" title="String And Hash">String And Hash</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/4-build a user management api/4-build a user management api.html" title="Build A User Management Api">Build A User Management Api</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/5-challenge string and hash/5-challenge string and hash.html" title="Challenge String And Hash">Challenge String And Hash</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/6-solution string and hash/6-solution string and hash.html" title="Solution String And Hash">Solution String And Hash</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/7-quiz string and hash/7-quiz string and hash.html" title="Quiz String And Hash">Quiz String And Hash</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/8-set and sorted set/8-set and sorted set.html" title="Set And Sorted Set">Set And Sorted Set</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/9-implement a leaderboard feature in a game/9-implement a leaderboard feature in a game.html" title="Implement A Leaderboard Feature In A Game">Implement A Leaderboard Feature In A Game</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/10-challenge set and sorted set/10-challenge set and sorted set.html" title="Challenge Set And Sorted Set">Challenge Set And Sorted Set</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/11-solution set and sorted set/11-solution set and sorted set.html" title="Solution Set And Sorted Set">Solution Set And Sorted Set</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/12-quiz set and sorted set/12-quiz set and sorted set.html" title="Quiz Set And Sorted Set">Quiz Set And Sorted Set</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/13-redis messaging options/13-redis messaging options.html" title="Redis Messaging Options">Redis Messaging Options</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/14-redis list operations/14-redis list operations.html" title="Redis List Operations">Redis List Operations</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/15-implement worker queues with lists/15-implement worker queues with lists.html" title="Implement Worker Queues With Lists">Implement Worker Queues With Lists</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/16-build a chat application with redis pub sub/16-build a chat application with redis pub sub.html" title="Build A Chat Application With Redis Pub Sub">Build A Chat Application With Redis Pub Sub</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/17-stream processing with redis streams/17-stream processing with redis streams.html" title="Stream Processing With Redis Streams">Stream Processing With Redis Streams</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/18-building an application using redis streams/18-building an application using redis streams.html" title="Building An Application Using Redis Streams">Building An Application Using Redis Streams</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/19-quiz redis messaging/19-quiz redis messaging.html" title="Quiz Redis Messaging">Quiz Redis Messaging</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/20-redis pipeline for performance gains/20-redis pipeline for performance gains.html" title="Redis Pipeline For Performance Gains">Redis Pipeline For Performance Gains</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/21-redis notifications/21-redis notifications.html" title="Redis Notifications">Redis Notifications</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/22-lua scripting/22-lua scripting.html" title="Lua Scripting">Lua Scripting</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/23-the scan family of commands/23-the scan family of commands.html" title="The Scan Family Of Commands">The Scan Family Of Commands</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/24-quiz core redis features/24-quiz core redis features.html" title="Quiz Core Redis Features">Quiz Core Redis Features</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/25-geospatial indexes/25-geospatial indexes.html" title="Geospatial Indexes">Geospatial Indexes</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/26-counting at scale with hyperloglog/26-counting at scale with hyperloglog.html" title="Counting At Scale With Hyperloglog">Counting At Scale With Hyperloglog</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/27-quiz geospatial indexes and hyperloglog/27-quiz geospatial indexes and hyperloglog.html" title="Quiz Geospatial Indexes And Hyperloglog">Quiz Geospatial Indexes And Hyperloglog</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/28-introduction to distributed redis architectures/28-introduction to distributed redis architectures.html" title="Introduction To Distributed Redis Architectures">Introduction To Distributed Redis Architectures</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/29-scaling with redis cluster/29-scaling with redis cluster.html" title="Scaling With Redis Cluster">Scaling With Redis Cluster</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/30-quiz distributed redis architectures/30-quiz distributed redis architectures.html" title="Quiz Distributed Redis Architectures">Quiz Distributed Redis Architectures</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/31-introduction to redis modules/31-introduction to redis modules.html" title="Introduction To Redis Modules">Introduction To Redis Modules</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/32-redisearch for full text search/32-redisearch for full text search.html" title="Redisearch For Full Text Search">Redisearch For Full Text Search</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/33-redisearch in action/33-redisearch in action.html" title="Redisearch In Action">Redisearch In Action</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/34-quiz redis modules/34-quiz redis modules.html" title="Quiz Redis Modules">Quiz Redis Modules</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/35-recap and what s next/35-recap and what s next.html" title="Recap And What S Next">Recap And What S Next</a></li>
+                
+                
+                <li><a href="/unconventional-graduate/36-thank you/36-thank you.html" title="Thank You">Thank You</a></li>
+                
+            </ul>
+        </li>
+    </ul>
+</div>
+    </aside>
+    <section class="content" style="overflow-y: auto;">
+      <article class="markdown-section" id="main">
+        <h1 id="class-assignment-title"><a href="/Assignments/Sample_Project?id=class-assignment-title"
+            data-id="class-assignment-title" class="anchor"><span>Building Practical Applications with Redis Using Go - Learn Interactively</span></a></h1>
+        <h2 id="description"><span>Course Overview</span></a></h2>
+        <p>Redis is an open-source, in-memory key-value data structure store that belongs to the NoSQL category of databases. Go is a programming language known for its performance, simplicity, and reliability. Redis can be used as a high-performance in-memory cache, a message broker and streaming engine. This course teaches you how to use Redis with Go to build practical applications.
+
+In this course, you’ll learn Redis data types, such as string and Hash. Then, you’ll cover data structures. Moreover, you’ll learn about Redis messaging through list, Pub/Sub and streams. You will also cover Redis’ core features, such as Redis pipeline, notifications, and Lua scripting. This course will finish with geospatial indexes, Redis Cluster and RediSearch. 
+ 
+This course will give you the ability to build practical applications with Redis and Go. 
+You will gain an understanding of how to choose the appropriate Redis data structures and features, as well as enable you to architect scalable applications.</p>
+      </article>
+      <article class="markdown-section" id="main">
+        <h2 id="description"><span>Course Content</span></a></h2>
+        <div class="table-wrapper">
+          <table id="_eiwfoklkm">
+            <thead>
+              <tr>
+                <th align="center">#</th>
+                <th align="center">Lesson</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+              
+              <tr>
+                <td align="center">0</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/0-course overview/0-course overview.html"
+                      title="Course Overview">Course Overview</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">1</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/1-introduction to redis/1-introduction to redis.html"
+                      title="Introduction To Redis">Introduction To Redis</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">2</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/2-go client libraries for redis/2-go client libraries for redis.html"
+                      title="Go Client Libraries For Redis">Go Client Libraries For Redis</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">3</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/3-string and hash/3-string and hash.html"
+                      title="String And Hash">String And Hash</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">4</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/4-build a user management api/4-build a user management api.html"
+                      title="Build A User Management Api">Build A User Management Api</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">5</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/5-challenge string and hash/5-challenge string and hash.html"
+                      title="Challenge String And Hash">Challenge String And Hash</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">6</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/6-solution string and hash/6-solution string and hash.html"
+                      title="Solution String And Hash">Solution String And Hash</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">7</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/7-quiz string and hash/7-quiz string and hash.html"
+                      title="Quiz String And Hash">Quiz String And Hash</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">8</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/8-set and sorted set/8-set and sorted set.html"
+                      title="Set And Sorted Set">Set And Sorted Set</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">9</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/9-implement a leaderboard feature in a game/9-implement a leaderboard feature in a game.html"
+                      title="Implement A Leaderboard Feature In A Game">Implement A Leaderboard Feature In A Game</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">10</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/10-challenge set and sorted set/10-challenge set and sorted set.html"
+                      title="Challenge Set And Sorted Set">Challenge Set And Sorted Set</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">11</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/11-solution set and sorted set/11-solution set and sorted set.html"
+                      title="Solution Set And Sorted Set">Solution Set And Sorted Set</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">12</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/12-quiz set and sorted set/12-quiz set and sorted set.html"
+                      title="Quiz Set And Sorted Set">Quiz Set And Sorted Set</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">13</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/13-redis messaging options/13-redis messaging options.html"
+                      title="Redis Messaging Options">Redis Messaging Options</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">14</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/14-redis list operations/14-redis list operations.html"
+                      title="Redis List Operations">Redis List Operations</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">15</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/15-implement worker queues with lists/15-implement worker queues with lists.html"
+                      title="Implement Worker Queues With Lists">Implement Worker Queues With Lists</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">16</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/16-build a chat application with redis pub sub/16-build a chat application with redis pub sub.html"
+                      title="Build A Chat Application With Redis Pub Sub">Build A Chat Application With Redis Pub Sub</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">17</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/17-stream processing with redis streams/17-stream processing with redis streams.html"
+                      title="Stream Processing With Redis Streams">Stream Processing With Redis Streams</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">18</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/18-building an application using redis streams/18-building an application using redis streams.html"
+                      title="Building An Application Using Redis Streams">Building An Application Using Redis Streams</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">19</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/19-quiz redis messaging/19-quiz redis messaging.html"
+                      title="Quiz Redis Messaging">Quiz Redis Messaging</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">20</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/20-redis pipeline for performance gains/20-redis pipeline for performance gains.html"
+                      title="Redis Pipeline For Performance Gains">Redis Pipeline For Performance Gains</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">21</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/21-redis notifications/21-redis notifications.html"
+                      title="Redis Notifications">Redis Notifications</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">22</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/22-lua scripting/22-lua scripting.html"
+                      title="Lua Scripting">Lua Scripting</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">23</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/23-the scan family of commands/23-the scan family of commands.html"
+                      title="The Scan Family Of Commands">The Scan Family Of Commands</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">24</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/24-quiz core redis features/24-quiz core redis features.html"
+                      title="Quiz Core Redis Features">Quiz Core Redis Features</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">25</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/25-geospatial indexes/25-geospatial indexes.html"
+                      title="Geospatial Indexes">Geospatial Indexes</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">26</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/26-counting at scale with hyperloglog/26-counting at scale with hyperloglog.html"
+                      title="Counting At Scale With Hyperloglog">Counting At Scale With Hyperloglog</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">27</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/27-quiz geospatial indexes and hyperloglog/27-quiz geospatial indexes and hyperloglog.html"
+                      title="Quiz Geospatial Indexes And Hyperloglog">Quiz Geospatial Indexes And Hyperloglog</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">28</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/28-introduction to distributed redis architectures/28-introduction to distributed redis architectures.html"
+                      title="Introduction To Distributed Redis Architectures">Introduction To Distributed Redis Architectures</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">29</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/29-scaling with redis cluster/29-scaling with redis cluster.html"
+                      title="Scaling With Redis Cluster">Scaling With Redis Cluster</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">30</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/30-quiz distributed redis architectures/30-quiz distributed redis architectures.html"
+                      title="Quiz Distributed Redis Architectures">Quiz Distributed Redis Architectures</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">31</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/31-introduction to redis modules/31-introduction to redis modules.html"
+                      title="Introduction To Redis Modules">Introduction To Redis Modules</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">32</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/32-redisearch for full text search/32-redisearch for full text search.html"
+                      title="Redisearch For Full Text Search">Redisearch For Full Text Search</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">33</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/33-redisearch in action/33-redisearch in action.html"
+                      title="Redisearch In Action">Redisearch In Action</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">34</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/34-quiz redis modules/34-quiz redis modules.html"
+                      title="Quiz Redis Modules">Quiz Redis Modules</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">35</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/35-recap and what s next/35-recap and what s next.html"
+                      title="Recap And What S Next">Recap And What S Next</a>
+                  </strong>
+                </td>
+              </tr>
+              
+              
+              <tr>
+                <td align="center">36</td>
+                <td align="center">
+                  <strong>
+                    <a href="/unconventional-graduate/36-thank you/36-thank you.html"
+                      title="Thank You">Thank You</a>
+                  </strong>
+                </td>
+              </tr>
+              
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </section>
+  </main>
+  <!-- UPDATE: Make sure to update NAME, REPO, and NAMESPACE below-->
+  <script>
+
+  </script>
+  <script src="/unconventional-graduate/static/docsify.min.js"></script>
+  <script src="/unconventional-graduate/static/index.js"></script>
+  <script src="/unconventional-graduate/static/emoji.min.js"></script>
+  <script src="/unconventional-graduate/static/external-script.min.js"></script>
+  <script src="/unconventional-graduate/static/docsify-copy-code@2"></script>
+  <script src="/unconventional-graduate/static/docsify-tabs@1"></script>
+  <script src="/unconventional-graduate/static/docsify-plugin-flexible-alerts"></script>
+  <script src="/unconventional-graduate/static/prism-bash.min.js"></script>
+  <script src="/unconventional-graduate/static/prism-handlebars.min.js"></script>
+  <script src="/unconventional-graduate/static/prism-javascript.min.js"></script>
+  <script src="/unconventional-graduate/static/prism-json.min.js"></script>
+  <script src="/unconventional-graduate/static/prism-markdown.min.js"></script>
+  <script src="/unconventional-graduate/static/index.min.js" type="text/javascript">
+  </script>
+</body>
+
+</html>

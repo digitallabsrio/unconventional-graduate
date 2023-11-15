@@ -1,0 +1,68 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+	"sync"
+
+	"github.com/go-redis/redis/v9"
+)
+
+var client *redis.Client
+
+const counterName = "test_counter"
+
+func init() {
+	client = redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	err := client.Ping(context.Background()).Err()
+	if err != nil {
+		log.Fatalf("failed to connect to redis. error message - %v", err)
+	}
+}
+
+func main() {
+	var wg sync.WaitGroup
+	wg.Add(5)
+
+	for i := 1; i <= 5; i++ {
+		go func() {
+			LuaIncrBy(client, counterName, 2)
+			wg.Done()
+		}()
+	}
+
+	fmt.Println("waiting for operations to finish")
+	wg.Wait()
+	fmt.Println("all operations finished")
+
+	result := client.Get(context.Background(), counterName).Val()
+	fmt.Println("final result", result)
+}
+
+func LuaIncrBy(c *redis.Client, key string, counter int) int {
+	incrByScript := redis.NewScript(`
+				local key = KEYS[1]
+				local counter = ARGV[1]
+
+				local value = redis.call("GET", key)
+				if not value then
+				value = 0
+				end
+
+				value = value + counter
+				redis.call("SET", key, value)
+
+				return value
+			`)
+
+	k := []string{key}
+
+	val, err := incrByScript.Run(context.Background(), c, k, counter).Int()
+
+	if err != nil {
+		log.Fatal("lua script execution failed", err)
+	}
+
+	return val
+}

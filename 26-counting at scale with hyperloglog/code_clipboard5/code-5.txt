@@ -1,0 +1,16 @@
+func storeProductViews() {
+	ctx := context.Background()
+	pipe := client.Pipeline()
+
+	for {
+		for i := 1; i <= numProducts; i++ {
+			name := "product:" + strconv.Itoa(i)
+			views := client.PFCount(ctx, name).Val()
+			pipe.ZAdd(ctx, productViewsSortedSet, &redis.Z{Member: name, Score: float64(views)})
+		}
+		_, err := pipe.Exec(ctx)
+		if err != nil {
+			log.Fatal("ZAdd pipe err", err)
+		}
+	}
+}

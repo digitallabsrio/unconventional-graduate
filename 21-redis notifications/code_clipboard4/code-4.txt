@@ -1,0 +1,3 @@
+func getValueForKeyFromDB(key string) string {
+	return key + "__" + strconv.Itoa(rand.Intn(1000)+1)
+}

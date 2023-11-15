@@ -1,0 +1,14 @@
+	c, err := rueidis.NewClient(rueidis.ClientOption{
+		InitAddress: []string{"localhost:6379"},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	ctx := context.Background()
+
+	c.Do(ctx, c.B().Set().Key("rueids").Value("github.com/rueian/rueidis").Nx().Build()).Error()
+
+	r, _ := c.Do(ctx, c.B().Get().Key("rueids").Build()).ToString()
+
+	log.Println("rueidis repo", r)

@@ -1,0 +1,12 @@
+func no_pipeline() {
+	ctx := context.Background()
+	start := time.Now()
+
+	for i := 1; i <= *numLoops; i++ {
+		key := "key-" + strconv.Itoa(i)
+		val := "val-" + strconv.Itoa(i)
+
+		client.Set(ctx, key, val, 0)
+	}
+	fmt.Println("time taken in default mode to set", *numLoops, "items =", time.Since(start))
+}

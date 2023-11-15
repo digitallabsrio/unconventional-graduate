@@ -1,0 +1,27 @@
+func play(w http.ResponseWriter, req *http.Request) {
+	//simulate
+
+	go func() {
+		for {
+			log.Println("game simulation running...")
+
+			members, err := client.SMembers(context.Background(), usersSet).Result()
+			if err != nil {
+				log.Println("could get users", err)
+				return
+			}
+
+			for _, member := range members {
+				_, err := client.ZIncrBy(context.Background(), gameLeaderboard, float64(rand.Intn(20)+1), member).Result()
+				if err != nil {
+					log.Println("could get incr score for member", err)
+					return
+				}
+				//log.Println("updated score for member", member, "current score", currScore)
+			}
+			time.Sleep(5 * time.Second)
+		}
+	}()
+
+	w.WriteHeader(http.StatusAccepted)
+}

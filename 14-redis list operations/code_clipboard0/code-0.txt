@@ -1,0 +1,46 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/go-redis/redis/v8"
+)
+
+func main() {
+	client := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_, err := client.Ping(context.Background()).Result()
+
+	if err != nil {
+		log.Fatal("ping failed. could not connect", err)
+	}
+
+	ctx := context.Background()
+
+	err = client.LPush(ctx, "my-list", "item-1", "item-2", "item-3", "item-4", "item-5").Err()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("added five items to list")
+
+	len := client.LLen(ctx, "my-list").Val()
+	fmt.Println("number of items in list -", len)
+
+	items := client.LRange(ctx, "my-list", 0, len-1).Val()
+	fmt.Println("items in list -", items)
+
+	item := client.LPop(ctx, "my-list").Val()
+	fmt.Println("item at the head of the list -", item)
+
+	client.LTrim(ctx, "my-list", 0, 2).Err()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println("trimmed the list")
+
+	items = client.LRange(ctx, "my-list", 0, len-1).Val()
+	fmt.Println("items in list after trimming -", items)
+
+}

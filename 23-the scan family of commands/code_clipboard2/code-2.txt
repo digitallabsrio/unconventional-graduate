@@ -1,0 +1,62 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"log"
+	"math/rand"
+	"strconv"
+
+	"github.com/go-redis/redis/v9"
+)
+
+var client *redis.Client
+
+func init() {
+	client = redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_, err := client.Ping(context.Background()).Result()
+
+	if err != nil {
+		log.Fatal("ping failed. could not connect to cluster", err)
+	}
+}
+
+func hscan() {
+	ctx := context.Background()
+
+	kv := map[string]interface{}{}
+	hashName := "hscan-test-hash"
+
+	//seed data
+	for i := 1; i <= 20; i++ {
+		key := "key-" + strconv.Itoa(i)
+		value := "value-" + strconv.Itoa(i)
+		kv[key] = value
+	}
+	err := client.HSet(ctx, hashName, kv).Err()
+	if err != nil {
+		fmt.Println("added seed data for hscan test")
+	}
+
+	var cursor uint64
+	var elems []string
+
+	for {
+		elems, cursor = client.HScan(context.Background(), hashName, 0, "key-*5", 0).Val()
+
+		for _, elem := range elems {
+			fmt.Println("found attribute/value in hash", elem)
+		}
+
+		if cursor == 0 {
+			fmt.Println("end of scan")
+			break
+		}
+	}
+
+	iter := client.HScan(context.Background(), hashName, 0, "key-3*", 0).Iterator()
+	for iter.Next(ctx) {
+		fmt.Println("found attribute/value using hscan iterator", iter.Val())
+	}
+}

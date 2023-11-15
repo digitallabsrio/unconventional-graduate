@@ -1,0 +1,25 @@
+func LuaIncrBy(c *redis.Client, key string, counter int) {
+	incrByScript := redis.NewScript(`
+				local key = KEYS[1]
+				local change = ARGV[1]
+
+				local value = redis.call("GET", key)
+				if not value then
+				value = 0
+				end
+
+				value = value + change
+				redis.call("SET", key, value)
+
+				return value
+			`)
+
+	k := []string{key}
+
+	val, err := incrByScript.Run(context.Background(), c, k, counter).Int()
+
+	if err != nil {
+		log.Fatal("lua script execution failed", err)
+	}
+    return val
+}

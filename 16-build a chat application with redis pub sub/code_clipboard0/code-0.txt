@@ -1,0 +1,6 @@
+client.Publish(context.Background(), chatChannel, user+":"+string(message)).Err()
+
+subscription := client.Subscribe(context.Background(), chatChannel)
+messagesChannel := subscription.Channel()
+
+sub.Unsubscribe(context.Background(), chatChannel)

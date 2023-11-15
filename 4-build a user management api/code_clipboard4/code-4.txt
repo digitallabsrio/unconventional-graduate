@@ -1,0 +1,16 @@
+func get(w http.ResponseWriter, req *http.Request) {
+	vars := mux.Vars(req)
+	id := vars["id"]
+
+	userHashName := userHashNamePrefix + id
+
+	user, err := client.HGetAll(req.Context(), userHashName).Result()
+
+	if len(user) == 0 {
+		log.Println("user with id", id, "not found")
+		http.Error(w, "user does not exist ", http.StatusNotFound)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(user)
+}

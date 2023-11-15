@@ -1,0 +1,58 @@
+package main
+
+import (
+	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+
+	"github.com/go-redis/redis/v8"
+)
+
+func main() {
+	ctx := context.Background()
+
+	client := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_, err := client.Ping(ctx).Result()
+
+	if err != nil {
+		log.Fatal("ping failed. could not connect", err)
+	}
+
+	testUser := user{Name: "testuser1", Email: "testuser1@foo.com", Age: 42}
+
+	u, err := json.Marshal(testUser)
+
+	if err != nil {
+		log.Fatal("marshal failed", err)
+	}
+
+	err = client.Do(ctx, "JSON.SET", "testuser:1", ".", u).Err()
+
+	if err != nil {
+		log.Fatal("json.set failed", err)
+	}
+
+	fmt.Println("saved user")
+
+	result, err := client.Do(ctx, "JSON.GET", "testuser:1").Text()
+	if err != nil {
+		log.Fatal("json.get failed", err)
+	}
+
+	var resp user
+
+	err = json.Unmarshal([]byte(result), &resp)
+
+	if err != nil {
+		log.Fatal("unmarshal failed", err)
+	}
+
+	fmt.Println("user details -", resp.Name, resp.Email, resp.Age)
+}
+
+type user struct {
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Age   int    `json:"age"`
+}

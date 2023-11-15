@@ -1,0 +1,42 @@
+func main() {
+
+	client = redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_, err := client.Ping(context.Background()).Result()
+
+	if err != nil {
+		log.Fatal("ping failed. could not connect", err)
+	}
+	startChatBroadcaster()
+
+	http.HandleFunc("/chat/", chat)
+	server := http.Server{Addr: ":8080", Handler: nil}
+
+	go func() {
+		fmt.Println("started server")
+		err := server.ListenAndServe()
+		if err != nil && err != http.ErrServerClosed {
+			log.Fatal("failed to start server", err)
+		}
+	}()
+
+	exit := make(chan os.Signal, 1)
+	signal.Notify(exit, syscall.SIGTERM, syscall.SIGINT)
+	<-exit
+
+	fmt.Println("exit signalled")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	//clean up all connected connections
+	for _, conn := range Users {
+		conn.Close()
+	}
+
+	sub.Unsubscribe(context.Background(), chatChannel)
+	sub.Close()
+
+	server.Shutdown(ctx)
+
+	fmt.Println("application shut down")
+}

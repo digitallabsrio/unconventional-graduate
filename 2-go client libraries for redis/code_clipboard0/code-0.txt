@@ -1,0 +1,13 @@
+	client := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	ctx := context.Background()
+
+	err := client.Ping(context.Background()).Err()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer client.Close()
+
+	client.Set(ctx, "go-redis", "github.com/go-redis/redis", 0)
+	log.Println("go-redis repo", client.Get(ctx, "go-redis").Val())

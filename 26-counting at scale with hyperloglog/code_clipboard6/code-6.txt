@@ -1,0 +1,12 @@
+func displayTopViewedProducts(topN int) {
+	ctx := context.Background()
+
+	for {
+		productViews := client.ZRevRangeWithScores(ctx, productViewsSortedSet, 0, int64(topN-1)).Val()
+		log.Println("****** LEADERBAORD *******")
+		for _, pv := range productViews {
+			log.Println(pv.Member, "has", pv.Score, "views")
+		}
+		time.Sleep(3 * time.Second)
+	}
+}

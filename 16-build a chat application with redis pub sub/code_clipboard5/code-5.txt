@@ -1,0 +1,16 @@
+func startChatBroadcaster() {
+	go func() {
+		fmt.Println("listening to messages")
+		sub = client.Subscribe(context.Background(), chatChannel)
+		messages := sub.Channel()
+		for message := range messages {
+			from := strings.Split(message.Payload, ":")[0]
+			//broadcast to all
+			for user, peer := range Users {
+				if from != user {
+					peer.WriteMessage(websocket.TextMessage, []byte(message.Payload))
+				}
+			}
+		}
+	}()
+}

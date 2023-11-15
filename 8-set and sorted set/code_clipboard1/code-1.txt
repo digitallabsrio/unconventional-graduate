@@ -1,0 +1,54 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/go-redis/redis/v8"
+)
+
+func main() {
+	client := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_, err := client.Ping(context.Background()).Result()
+
+	if err != nil {
+		log.Fatal("ping failed. could not connect", err)
+	}
+
+}
+
+func sortedSet(client *redis.Client) {
+
+	ctx := context.Background()
+
+	client.ZAdd(ctx, "stocks-traded-volume", &redis.Z{Member: "stock1", Score: 10000})
+	client.ZAdd(ctx, "stocks-traded-volume", &redis.Z{Member: "stock2", Score: 20000})
+	client.ZAdd(ctx, "stocks-traded-volume", &redis.Z{Member: "stock3", Score: 50000})
+	client.ZAdd(ctx, "stocks-traded-volume", &redis.Z{Member: "stock4", Score: 8000})
+	client.ZAdd(ctx, "stocks-traded-volume", &redis.Z{Member: "stock5", Score: 30000})
+
+	stock1Rank := client.ZRank(ctx, "stocks-traded-volume", "stock1").Val()
+	stock2Rank := client.ZRank(ctx, "stocks-traded-volume", "stock2").Val()
+	log.Println("stock 1 is ranked", stock1Rank)
+	log.Println("stock 2 is ranked", stock2Rank)
+
+	stock3TradedVolume := client.ZScore(ctx, "stocks-traded-volume", "stock3").Val()
+	log.Println("stock 3 traded volume", stock3TradedVolume)
+
+	stock1Rank = client.ZRevRank(ctx, "stocks-traded-volume", "stock1").Val()
+	log.Println("stock 1 is ranked", stock1Rank)
+
+	client.ZIncrBy(ctx, "stocks-traded-volume", 3000, "stock4")
+	stock4TradedVolume := client.ZScore(ctx, "stocks-traded-volume", "stock4").Val()
+	log.Println("stock 4 traded volume", stock4TradedVolume)
+
+	stocks := client.ZRevRangeByScore(ctx, "stocks-traded-volume", &redis.ZRangeBy{Min: "20000", Max: "40000"}).Val()
+	log.Println("stocks with trade volume between 20000-40000", stocks)
+
+	topThree := client.ZRevRangeWithScores(ctx, "stocks-traded-volume", 0, 2).Val()
+	log.Println("top 3 stocks traded by volume", topThree)
+
+	client.ZRem(ctx, "stocks-traded-volume", "stock1")
+
+}

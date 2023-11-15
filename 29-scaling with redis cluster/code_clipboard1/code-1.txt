@@ -1,0 +1,29 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"log"
+
+	"github.com/go-redis/redis/v9"
+)
+
+var client *redis.ClusterClient
+
+func init() {
+	client = redis.NewClusterClient(&redis.ClusterOptions{Addrs: []string{"localhost:7000", "localhost:7001", "localhost:7002"}})
+
+	_, err := client.Ping(context.Background()).Result()
+	if err != nil {
+		log.Fatal("ping failed. could not connect to cluster", err)
+	}
+	fmt.Println("connected to redis cluster")
+}
+
+func main() {
+  	slots := client.ClusterSlots(context.Background()).Val()
+	for _, slot := range slots {
+		fmt.Println("slots", slot.Start, "-", slot.End, "are on node", slot.Nodes[0].Addr)
+	}
+}

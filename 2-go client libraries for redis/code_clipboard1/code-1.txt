@@ -1,0 +1,11 @@
+	c, err := goredis.Dial("tcp", "localhost:6379")
+	if err != nil {
+		log.Fatal(err)
+
+	}
+	defer c.Close()
+
+	c.Do("SET", "redigo", "github.com/gomodule/redigo/redis")
+	s, _ := goredis.String(c.Do("GET", "redigo"))
+
+	log.Println("redigo repo", s)

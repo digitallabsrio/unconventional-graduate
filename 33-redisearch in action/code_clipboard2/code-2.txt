@@ -1,0 +1,9 @@
+func main() {
+	r := mux.NewRouter()
+
+	r.HandleFunc("/search", search).Methods(http.MethodGet)
+	r.HandleFunc("/load", load).Methods(http.MethodGet)
+
+	fmt.Println("started HTTP server....")
+	log.Fatal(http.ListenAndServe(":8080", r))
+}

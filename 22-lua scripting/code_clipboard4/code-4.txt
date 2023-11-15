@@ -1,0 +1,12 @@
+local key = KEYS[1]
+local counter = ARGV[1]
+
+local value = redis.call("GET", key)
+	if not value then
+	 value = 0
+	end
+
+value = value + counter
+redis.call("SET", key, value)
+
+return value

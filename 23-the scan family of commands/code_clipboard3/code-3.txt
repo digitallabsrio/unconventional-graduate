@@ -1,0 +1,58 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"log"
+	"math/rand"
+	"strconv"
+
+	"github.com/go-redis/redis/v9"
+)
+
+var client *redis.Client
+
+func init() {
+	client = redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_, err := client.Ping(context.Background()).Result()
+
+	if err != nil {
+		log.Fatal("ping failed. could not connect to cluster", err)
+	}
+
+}
+
+func zscan() {
+	ctx := context.Background()
+	sortedSetName := "zcan-test-sortedset"
+
+	//seed data
+	for i := 1; i <= 20; i++ {
+		player := "player-" + strconv.Itoa(i)
+		client.ZAdd(ctx, sortedSetName, redis.Z{Score: float64(rand.Intn(100) + 1), Member: player})
+
+	}
+	fmt.Println("added seed data for zscan test")
+
+	var cursor uint64
+	var members []string
+
+	for {
+		members, cursor = client.ZScan(context.Background(), sortedSetName, 0, "player-*9", 0).Val()
+
+		for _, member := range members {
+			fmt.Println("found member in sorted set", member)
+		}
+
+		if cursor == 0 {
+			fmt.Println("end of scan")
+			break
+		}
+	}
+
+	iter := client.ZScan(context.Background(), sortedSetName, 0, "player-2*", 0).Iterator()
+	for iter.Next(ctx) {
+		fmt.Println("found member/score using zscan iterator", iter.Val())
+	}
+}

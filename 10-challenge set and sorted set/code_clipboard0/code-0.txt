@@ -1,0 +1,25 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/go-redis/redis/v8"
+)
+
+func main() {
+	client := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_, err := client.Ping(context.Background()).Result()
+
+	if err != nil {
+		log.Fatal("ping failed. could not connect", err)
+	}
+
+	ctx := context.Background()
+
+	client.SAdd(ctx, "fruits", "apple", "orange", "banana")
+	client.SAdd(ctx, "more-fruits", "banana", "grapes", "kiwi", "orange", "avocado")
+
+	//rest of the code
+}

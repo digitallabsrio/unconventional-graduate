@@ -1,0 +1,10 @@
+var client *redis.Client
+
+func init() {
+
+	client = redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	err := client.Ping(context.Background()).Err()
+    if err != nil {
+		log.Fatalf("failed to connect to redis. error message - %v", err)
+	}
+}

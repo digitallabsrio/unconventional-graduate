@@ -1,0 +1,32 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/go-redis/redis/v8"
+)
+
+func main() {
+	client := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_, err := client.Ping(context.Background()).Result()
+
+	if err != nil {
+		log.Fatal("ping failed. could not connect", err)
+	}
+
+	ctx := context.Background()
+
+	client.SAdd(ctx, "fruits", "apple", "orange", "banana")
+	fmt.Println("contents of 'fruits'", client.SMembers(ctx, "fruits").Val())
+
+	client.SAdd(ctx, "more-fruits", "banana", "grapes", "kiwi", "orange", "avocado")
+	fmt.Println("contents of 'more-fruits'", client.SMembers(ctx, "more-fruits").Val())
+
+	client.SInterStore(ctx, "common-fruits", "fruits", "more-fruits")
+	fmt.Println("calculated common fruits")
+
+	commonFruits := client.SMembers(ctx, "common-fruits").Val()
+	fmt.Println("common fruits", commonFruits)
+}

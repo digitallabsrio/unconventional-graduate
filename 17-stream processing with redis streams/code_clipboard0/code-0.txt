@@ -1,0 +1,9 @@
+for i := 1; i <= 5; i++ {
+	p := strconv.Itoa(i)
+	id, err := client.XAdd(ctx, &redis.XAddArgs{Stream: "test-stream", Values: []string{"key-" + p, "value-" + p}}).Result()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Added to stream", id)
+}

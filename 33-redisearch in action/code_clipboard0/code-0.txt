@@ -1,0 +1,8 @@
+package main
+
+import (
+    //...
+	"github.com/RediSearch/redisearch-go/redisearch"
+	"github.com/gomodule/redigo/redis"
+	"github.com/gorilla/mux"
+)

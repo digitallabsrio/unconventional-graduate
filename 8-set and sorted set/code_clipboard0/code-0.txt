@@ -1,0 +1,47 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/go-redis/redis/v8"
+)
+
+func main() {
+	client := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_, err := client.Ping(context.Background()).Result()
+
+	if err != nil {
+		log.Fatal("ping failed. could not connect", err)
+	}
+}
+
+func set(client *redis.Client) {
+
+	ctx := context.Background()
+
+	client.SAdd(ctx, "fruits", "apple", "orange", "banana")
+
+	fruits := client.SMembers(ctx, "fruits").Val()
+	fmt.Println("fruits in the set", fruits)
+
+	isMangoThere := client.SIsMember(ctx, "fruits", "mango").Val()
+	isBananaThere := client.SIsMember(ctx, "fruits", "banana").Val()
+	fmt.Println("is mango in the set?", isMangoThere)
+	fmt.Println("is banana in the set?", isBananaThere)
+
+	num := client.SCard(ctx, "fruits").Val()
+	fmt.Println("there are", num, "fruits in the set")
+
+	client.SRem(ctx, "fruits", "banana")
+
+	num = client.SCard(ctx, "fruits").Val()
+	fmt.Println("now, there are", num, "fruits in the set")
+
+	client.SAdd(ctx, "more-fruits", "banana", "grapes", "kiwi")
+
+	allFruits := client.SUnion(ctx, "fruits", "more-fruits").Val()
+	fmt.Println("all fruits", allFruits)
+
+}

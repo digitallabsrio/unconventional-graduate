@@ -1,0 +1,55 @@
+func search(w http.ResponseWriter, req *http.Request) {
+	_lat := req.URL.Query().Get("lat")
+	_long := req.URL.Query().Get("long")
+	_dist := req.URL.Query().Get("dist")
+
+	fmt.Println("searching for stores within", _dist, "miles of lat:", _lat, "long:", _long)
+
+	lat, _ := strconv.ParseFloat(_lat, 64)
+	long, _ := strconv.ParseFloat(_long, 64)
+	dist, _ := strconv.ParseFloat(_dist, 64)
+
+	stores := client.GeoSearchLocation(req.Context(), geoName,
+		&redis.GeoSearchLocationQuery{
+			GeoSearchQuery: redis.GeoSearchQuery{
+				Longitude:  float64(long),
+				Latitude:   float64(lat),
+				Radius:     float64(dist),
+				RadiusUnit: "mi",
+				Sort:       "ASC"},
+			WithCoord: true,
+			WithDist:  true}).
+		Val()
+
+	var results []SearchResult
+
+	for _, store := range stores {
+		fmt.Println(store.Name)
+
+		parts := strings.Split(store.Name, " ")
+		storeid := parts[len(parts)-1]
+		storeHashName := hashNamePrefix + storeid
+
+		storeInfo, err := client.HMGet(req.Context(), storeHashName, "address", "phone").Result()
+		if err != nil {
+			fmt.Println("failed to get store info for", storeHashName, err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		results = append(results, SearchResult{Name: store.Name, Distance: store.Dist, Address: storeInfo[0].(string), Phone: storeInfo[1].(string), Lat: store.Latitude, Long: store.Longitude})
+	}
+
+	err := json.NewEncoder(w).Encode(results)
+	if err != nil {
+		fmt.Println("failed to encode search response", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+}
+
+type SearchResult struct {
+	Name     string  `json:"name"`
+	Distance float64 `json:"distance"`
+	Address  string  `json:"address"`
+	Phone    string  `json:"phone,omitempty"`
+	Lat      float64 `json:"lat"`
+	Long     float64 `json:"long"`
+}

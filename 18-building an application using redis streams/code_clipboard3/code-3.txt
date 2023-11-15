@@ -1,0 +1,22 @@
+const stream = "users"
+
+func send(w http.ResponseWriter, req *http.Request) {
+	info, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		log.Fatal("failed to read request payload", err)
+	}
+	defer req.Body.Close()
+
+	name := strings.Split(string(info), ",")[0]
+	email := strings.Split(string(info), ",")[1]
+
+	err = client.XAdd(context.Background(), &redis.XAddArgs{Stream: stream, Values: []interface{}{name, email}}).Err()
+
+	if err != nil {
+		log.Fatal("xadd issue", err)
+	}
+
+	fmt.Println("added user info to stream", name)
+
+	w.Header().Add("user", name)
+}

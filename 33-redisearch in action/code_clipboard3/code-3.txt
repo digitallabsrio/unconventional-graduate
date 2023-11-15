@@ -1,0 +1,21 @@
+func dropAndCreateIndex() {
+	err := client.DropIndex(true)
+	if err != nil {
+		fmt.Println("drop index failed ", err)
+	}
+
+	schema := redisearch.NewSchema(redisearch.DefaultOptions).
+		AddField(redisearch.NewTextFieldOptions("name", redisearch.TextFieldOptions{})).
+		AddField(redisearch.NewTextFieldOptions("email", redisearch.TextFieldOptions{})).
+		AddField(redisearch.NewTextFieldOptions("city", redisearch.TextFieldOptions{})).
+		AddField(redisearch.NewNumericFieldOptions("zipcode", redisearch.NumericFieldOptions{Sortable: true}))
+
+	indexDefinition := redisearch.NewIndexDefinition().AddPrefix(indexDefinitionHashPrefix)
+
+	err = client.CreateIndexWithIndexDefinition(schema, indexDefinition)
+	if err != nil {
+		log.Fatal("index creation failed ", err)
+	}
+
+	fmt.Println("redisearch index created")
+}

@@ -1,0 +1,11 @@
+func main() {
+
+	wait := make(chan os.Signal, 1)
+	signal.Notify(wait, syscall.SIGINT)
+
+	go generateViews()
+	go storeProductViews()
+	go displayTopViewedProducts(5)
+
+	<-wait
+}

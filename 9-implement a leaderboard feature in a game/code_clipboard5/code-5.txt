@@ -1,0 +1,25 @@
+func leaderboard(w http.ResponseWriter, req *http.Request) {
+
+	n := mux.Vars(req)["n"]
+	log.Println("fetching top", n, "players")
+
+	num, _ := strconv.Atoi(n)
+
+	//top 5
+	leaders, err := client.ZRevRangeWithScores(context.Background(), gameLeaderboard, 0, int64(num-1)).Result()
+
+	if err != nil {
+		log.Println("failed to query sorted set", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = json.NewEncoder(w).Encode(leaders)
+	if err != nil {
+		log.Println("failed to encode leaderboard info", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("successfully fetched leaderboard info....")
+}

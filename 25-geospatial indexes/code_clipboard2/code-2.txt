@@ -1,0 +1,17 @@
+var client *redis.Client
+
+const fileName = "store_locations.json"
+const geoName = "store-locations"
+const hashNamePrefix = "store:"
+
+func init() {
+
+	client = redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+
+	err := client.Ping(context.Background()).Err()
+	if err != nil {
+		log.Fatalf("failed to connect to redis. error message - %v", err)
+	}
+
+	fmt.Println("successfully connected to redis")
+}

@@ -1,0 +1,28 @@
+func load(rw http.ResponseWriter, req *http.Request) {
+	cities := []string{"New York", "Tel Aviv", "Dublin", "New Delhi", "New Jersey"}
+	zipcodes := []int{123456, 789101, 234567, 891012, 345678}
+
+	conn := pool.Get()
+
+	go func() {
+		for i := 1; i <= 100000; i++ {
+			data := make(map[string]interface{})
+			name := "user:" + strconv.Itoa(i)
+			data["name"] = name
+			data["email"] = name + "@foo.com"
+			data["city"] = cities[rand.Intn(len(cities))]
+			data["zipcode"] = zipcodes[rand.Intn(len(zipcodes))]
+
+			val := redis.Args{data["name"]}.AddFlat(data)
+
+			_, err := conn.Do("HSET", val...)
+			if err != nil {
+				fmt.Println("failed to add user", err)
+				return
+			}
+
+			fmt.Println("added user", data["name"])
+			time.Sleep(1 * time.Second)
+		}
+	}()
+}

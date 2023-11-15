@@ -1,0 +1,41 @@
+const chatChannel = "chats"
+
+var upgrader = websocket.Upgrader{}
+
+func chat(w http.ResponseWriter, r *http.Request) {
+	user := strings.TrimPrefix(r.URL.Path, "/chat/")
+
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		return true
+	}
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+
+	Users[user] = c
+	fmt.Println(user, "in chat")
+
+	for {
+		_, message, err := c.ReadMessage()
+		if err != nil {
+			//fmt.Println("read message error", err)
+			_, ok := err.(*websocket.CloseError)
+			if ok {
+				fmt.Println("connection closed by", user)
+				err := c.Close()
+				if err != nil {
+					fmt.Println("error closing ws connection", err)
+				}
+				delete(Users, user)
+				fmt.Println("closed websocket connection and removed user session")
+			}
+			break
+		}
+		client.Publish(context.Background(), chatChannel, user+":"+string(message)).Err()
+		if err != nil {
+			fmt.Println("publish failed", err)
+		}
+	}
+}

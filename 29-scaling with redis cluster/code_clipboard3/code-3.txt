@@ -1,0 +1,50 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"log"
+
+	"github.com/go-redis/redis/v9"
+)
+
+var client *redis.ClusterClient
+
+func init() {
+	client = redis.NewClusterClient(&redis.ClusterOptions{Addrs: []string{"localhost:7000", "localhost:7001", "localhost:7002"}})
+
+	_, err := client.Ping(context.Background()).Result()
+	if err != nil {
+		log.Fatal("ping failed. could not connect to cluster", err)
+	}
+
+	fmt.Println("connected to redis cluster")
+
+}
+
+func main() {
+	client.Set(context.Background(), "{users}:user1", "user1@foo.com", 0)
+	client.Set(context.Background(), "{users}:user2", "user2@foo.com", 0)
+
+	client.Set(context.Background(), "{customers}:customer1", "customer 1", 0)
+	client.Set(context.Background(), "{customers}:customer2", "customer 2", 0)
+
+	slot := client.ClusterKeySlot(context.Background(), "users").Val()
+	fmt.Println("hash slot for hash tag 'users'", slot)
+
+	slot = client.ClusterKeySlot(context.Background(), "{users}:user1").Val()
+	fmt.Println("hash slot for 'user1'", slot)
+
+	slot = client.ClusterKeySlot(context.Background(), "{users}:user2").Val()
+	fmt.Println("hash slot for 'user2'", slot)
+
+	slot = client.ClusterKeySlot(context.Background(), "customers").Val()
+	fmt.Println("hash slot for hash tag 'customers'", slot)
+
+	slot = client.ClusterKeySlot(context.Background(), "{customers}:customer1").Val()
+	fmt.Println("hash slot for 'customer1'", slot)
+
+	slot = client.ClusterKeySlot(context.Background(), "{customers}:customer2").Val()
+	fmt.Println("hash slot for 'customer2'", slot)
+}

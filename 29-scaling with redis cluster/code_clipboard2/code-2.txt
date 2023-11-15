@@ -1,0 +1,54 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"log"
+
+	"github.com/go-redis/redis/v9"
+)
+
+var client *redis.ClusterClient
+
+func init() {
+	client = redis.NewClusterClient(&redis.ClusterOptions{Addrs: []string{"localhost:7000", "localhost:7001", "localhost:7002"}})
+
+	_, err := client.Ping(context.Background()).Result()
+	if err != nil {
+		log.Fatal("ping failed. could not connect to cluster", err)
+	}
+
+	fmt.Println("connected to redis cluster")
+
+}
+
+func main() {
+	client.Set(context.Background(), "foo", "test-value", 0)
+	client.Set(context.Background(), "bar", "test-value", 0)
+	client.Set(context.Background(), "baz", "test-value", 0)
+
+	fmt.Println("added keys 'foo', 'bar', 'baz'")
+
+	slot := client.ClusterKeySlot(context.Background(), "foo").Val()
+	fmt.Println("hash slot for key 'foo'", slot)
+
+	slot = client.ClusterKeySlot(context.Background(), "bar").Val()
+	fmt.Println("hash slot for key 'bar'", slot)
+
+	slot = client.ClusterKeySlot(context.Background(), "baz").Val()
+	fmt.Println("hash slot for key 'baz'", slot)
+
+	err := client.Del(context.Background(), "foo").Err()
+
+	if err != nil {
+		fmt.Println("error", err)
+	} else {
+		fmt.Println("single key operation: key 'foo' deleted successfully")
+	}
+
+	err = client.Del(context.Background(), "bar", "baz").Err()
+	if err != nil {
+		fmt.Println("multi-key operation: unable to delete keys 'bar', 'baz'. error from redis -", err)
+	}
+}

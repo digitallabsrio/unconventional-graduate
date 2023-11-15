@@ -1,0 +1,32 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/go-redis/redis/v8"
+)
+
+var client *redis.Client
+
+func main() {
+	client = redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+
+	err := client.Ping(context.Background()).Err()
+	if err != nil {
+		log.Fatalf("failed to connect to redis. error message - %v", err)
+	}
+
+	fmt.Println("successfully connected to redis")
+
+	client.GeoAdd(context.Background(), "coordinates", &redis.GeoLocation{Name: "store1", Latitude: 40, Longitude: -83})
+	client.GeoAdd(context.Background(), "coordinates", &redis.GeoLocation{Name: "store2", Latitude: 34, Longitude: -92})
+	fmt.Println("added co-ordinates for store1 and store2")
+
+	coordinates := client.GeoPos(context.Background(), "coordinates", "store1").Val()
+	fmt.Println("coordinates of store1:", coordinates[0].Latitude, coordinates[0].Longitude)
+
+	distance := client.GeoDist(context.Background(), "coordinates", "store1", "store2", "mi").Val()
+	fmt.Println("distance between store1 and store2:", distance)
+}

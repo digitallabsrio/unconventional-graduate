@@ -1,0 +1,14 @@
+func send(w http.ResponseWriter, req *http.Request) {
+	var email Email
+	err := json.NewDecoder(req.Body).Decode(&email)
+
+	log.Println("recieved email request", email)
+
+	jobID := strconv.Itoa(rand.Intn(1000) + 1)
+
+	jobInfo := JobInfo{Email: email, JobId: jobID}
+	job, err := json.Marshal(jobInfo)
+
+	err = client.LPush(context.Background(), "jobs", job).Err()
+	w.Header().Add("jobid", jobID)
+}

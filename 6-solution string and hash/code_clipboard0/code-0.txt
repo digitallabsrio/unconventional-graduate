@@ -1,0 +1,54 @@
+package main
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"github.com/go-redis/redis/v8"
+)
+
+func main() {
+	client := redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_, err := client.Ping(context.Background()).Result()
+
+	if err != nil {
+		log.Fatal("ping failed. could not connect", err)
+	}
+
+	ctx := context.Background()
+
+	_, err = client.HSet(ctx, "test_user", "name", "user1", "email", "user1@foo.com", "city", "New York").Result()
+	if err != nil {
+		log.Fatal("hset failed", err)
+	}
+
+	result := client.HGetAll(ctx, "test_user").Val()
+	if err != nil {
+		log.Fatal("hgetall error")
+	}
+
+	fmt.Println("user info")
+
+	for key, val := range result {
+		log.Println(key, "=", val)
+	}
+
+	err = client.HDel(ctx, "test_user", "city").Err()
+	if err != nil {
+		log.Fatal("hdel error")
+	}
+
+	fmt.Println("hdel executed")
+
+	result = client.HGetAll(ctx, "test_user").Val()
+	if err != nil {
+		log.Fatal("hgetall error")
+	}
+
+	fmt.Println("user info after hdel")
+
+	for key, val := range result {
+		log.Println(key, "=", val)
+	}
+}

@@ -1,0 +1,13 @@
+func add(w http.ResponseWriter, req *http.Request) {
+
+	var user map[string]string
+	err := json.NewDecoder(req.Body).Decode(&user)
+
+	id, err := client.Incr(context.Background(), userIDCounter).Result()
+
+	userHashName := userHashNamePrefix + strconv.Itoa(int(id))
+	err = client.HSet(req.Context(), userHashName, user).Err()
+
+	w.Header().Add("Location", "http://"+req.Host+"/"+strconv.Itoa(int(id)))
+	w.WriteHeader(http.StatusCreated)
+}

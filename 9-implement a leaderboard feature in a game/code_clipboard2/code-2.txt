@@ -1,0 +1,11 @@
+func main() {
+
+	r := mux.NewRouter()
+
+	r.HandleFunc("/", addUser).Methods(http.MethodPost)
+	r.HandleFunc("/play", play).Methods(http.MethodGet)
+	r.HandleFunc("/top/{n}", leaderboard).Methods(http.MethodGet)
+
+	log.Println("started HTTP server....")
+	log.Fatal(http.ListenAndServe(":8080", r))
+}

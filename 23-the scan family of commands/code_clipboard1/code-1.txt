@@ -1,0 +1,61 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"fmt"
+	"log"
+	"math/rand"
+	"strconv"
+
+	"github.com/go-redis/redis/v9"
+)
+
+var client *redis.Client
+
+func init() {
+	client = redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_, err := client.Ping(context.Background()).Result()
+
+	if err != nil {
+		log.Fatal("ping failed. could not connect to cluster", err)
+	}
+}
+
+func main() {
+	ctx := context.Background()
+	var items []string
+	setName := "sscan-test"
+
+	//seed data
+
+	for i := 1; i <= 20; i++ {
+		item := "user-" + strconv.Itoa(i)
+		items = append(items, item)
+	}
+	err := client.SAdd(ctx, setName, items).Err()
+	if err != nil {
+		fmt.Println("added seed data for sscan test")
+	}
+
+	var cursor uint64
+	var values []string
+
+	for {
+		values, cursor = client.SScan(context.Background(), setName, cursor, "user-2*", 0).Val()
+
+		for _, value := range values {
+			fmt.Println("found element in set", value)
+		}
+
+		if cursor == 0 {
+			fmt.Println("end of sscan")
+			break
+		}
+	}
+
+	iter := client.SScan(context.Background(), setName, cursor, "user-*2", 0).Iterator()
+	for iter.Next(ctx) {
+		fmt.Println("found element using sscan iterator", iter.Val())
+	}
+}

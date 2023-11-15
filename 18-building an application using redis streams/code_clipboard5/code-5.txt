@@ -1,0 +1,16 @@
+const stream = "users"
+const consumerGroup = "test-group"
+const hashPrefix = "user:"
+
+var client *redis.Client
+
+func init() {
+	client = redis.NewClient(&redis.Options{Addr: "localhost:6379"})
+	_, err := client.Ping(context.Background()).Result()
+
+	if err != nil {
+		log.Fatal("ping failed. could not connect", err)
+	}
+
+	client.XGroupCreateMkStream(context.Background(), stream, consumerGroup, "$")
+}

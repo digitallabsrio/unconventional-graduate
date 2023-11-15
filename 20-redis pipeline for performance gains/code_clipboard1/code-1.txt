@@ -1,0 +1,19 @@
+func pipeline() {
+	ctx := context.Background()
+	start := time.Now()
+
+	pipe := client.Pipeline()
+	for i := 1; i <= *numLoops; i++ {
+		key := "key-" + strconv.Itoa(i)
+		val := "val-" + strconv.Itoa(i)
+
+		pipe.Set(ctx, key, val, 0)
+	}
+
+	_, err := pipe.Exec(ctx)
+	if err != nil {
+		fmt.Println("error", err)
+	}
+
+	fmt.Println("time taken in pipeline mode to set", *numLoops, "items =", time.Since(start))
+}

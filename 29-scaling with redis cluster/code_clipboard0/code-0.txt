@@ -1,0 +1,6 @@
+client = redis.NewClusterClient(&redis.ClusterOptions{Addrs: []string{"localhost:7000", "localhost:7001", "localhost:7002"}})
+
+_, err := client.Ping(context.Background()).Result()
+if err != nil {
+	log.Fatal("ping failed. could not connect to cluster", err)
+}
